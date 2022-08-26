@@ -16,6 +16,13 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+// GetAllanimation godoc
+// @Summary Show Animations.
+// @Tags root
+// @Accept */*
+// @Produce json
+// @Success 200 {array} models.Animation
+// @Router /api/gotti [get]
 func GetAllanimation(c *fiber.Ctx) error {
 	animationCollection := db.MI.DB.Collection("gotti")
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
@@ -88,6 +95,14 @@ func GetAllanimation(c *fiber.Ctx) error {
 	})
 }
 
+// GetAnimation godoc
+// @Summary Show the Animation.
+// @Tags root
+// @Accept */*
+// @Produce json
+// @Param   id path int true "Animation ID"
+// @Success 200 {object} models.Animation
+// @Router /api/gotti/{id} [get]
 func GetAnimation(c *fiber.Ctx) error {
 	animationCollection := db.MI.DB.Collection("gotti")
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
@@ -118,6 +133,14 @@ func GetAnimation(c *fiber.Ctx) error {
 	})
 }
 
+// AddAnimation godoc
+// @Summary Add the Animation.
+// @Tags root
+// @Accept */*
+// @Produce json
+// @Param request body models.Animation.request true "query params"
+// @Success 200 {object} models.Animation.response
+// @Router /api/gotti [post]
 func AddAnimation(c *fiber.Ctx) error {
 	animationCollection := db.MI.DB.Collection("gotti")
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
@@ -132,8 +155,6 @@ func AddAnimation(c *fiber.Ctx) error {
 		})
 	}
 
-	//log.Println("c = ", animation.Animationlottie)
-
 	result, err := animationCollection.InsertOne(ctx, animation)
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{
@@ -147,5 +168,88 @@ func AddAnimation(c *fiber.Ctx) error {
 		"success": true,
 		"message": "Animation inserted successfully",
 	})
+}
 
+// UpdateAnimation godoc
+// @Summary Update the Animation.
+// @Description get the status of server.
+// @Tags root
+// @Accept */*
+// @Produce json
+// @Param   id path int true "Animation ID"
+// @Param request body models.Animation.request true "query params"
+// @Success 200 {object} models.Animation
+// @Router /api/gotti/{id} [put]
+func UpdateAnimation(c *fiber.Ctx) error {
+	animationCollection := db.MI.DB.Collection("gotti")
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	animation := new(models.Animation)
+
+	if err := c.BodyParser(animation); err != nil {
+		log.Println(err)
+		return c.Status(400).JSON(fiber.Map{
+			"success": false,
+			"message": "Failed to parse body",
+			"error":   err,
+		})
+	}
+
+	objId, err := primitive.ObjectIDFromHex(c.Params("id"))
+	if err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"success": false,
+			"message": "Animation not found",
+			"error":   err,
+		})
+	}
+
+	update := bson.M{
+		"$set": animation,
+	}
+	_, err = animationCollection.UpdateOne(ctx, bson.M{"_id": objId}, update)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{
+			"success": false,
+			"message": "Animation failed to update",
+			"error":   err.Error(),
+		})
+	}
+	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
+		"success": true,
+		"message": "Animation updated successfully",
+	})
+}
+
+// DeleteAnimation godoc
+// @Summary Delete the Animation.
+// @Tags root
+// @Accept */*
+// @Produce json
+// @Param   id path int true "Animation ID"
+// @Success 200
+// @Router /api/gotti/{id} [delete]
+func DeleteAnimation(c *fiber.Ctx) error {
+	animationCollection := db.MI.DB.Collection("gotti")
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+
+	objId, err := primitive.ObjectIDFromHex(c.Params("id"))
+	if err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"success": false,
+			"message": "Animation not found",
+			"error":   err,
+		})
+	}
+	_, err = animationCollection.DeleteOne(ctx, bson.M{"_id": objId})
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{
+			"success": false,
+			"message": "Animation failed to delete",
+			"error":   err,
+		})
+	}
+	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
+		"success": true,
+		"message": "Animation deleted successfully",
+	})
 }

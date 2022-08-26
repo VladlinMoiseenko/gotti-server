@@ -10,6 +10,6 @@ func GottiRoute(route fiber.Router) {
 	route.Get("/", controllers.GetAllanimation)
 	route.Get("/:id", controllers.GetAnimation)
 	route.Post("/", controllers.AddAnimation)
-	//route.Put("/:id", controllers.UpdateAnimation)
-	//route.Delete("/:id", controllers.DeleteAnimation)
+	route.Put("/:id", controllers.UpdateAnimation)
+	route.Delete("/:id", controllers.DeleteAnimation)
 }

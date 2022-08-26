@@ -1,0 +1,120 @@
+basePath: /
+definitions:
+  models.Animation:
+    properties:
+      _id:
+        type: string
+      animationName:
+        type: string
+      animationlottie:
+        type: string
+    type: object
+host: localhost:9000
+info:
+  contact: {}
+  description: This is a sample server.
+  title: Fiber Swagger Example API
+  version: "2.0"
+paths:
+  /api/gotti:
+    get:
+      consumes:
+      - '*/*'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Animation'
+            type: array
+      summary: Show Animations.
+      tags:
+      - root
+    post:
+      consumes:
+      - '*/*'
+      parameters:
+      - description: query params
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.Animation'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Animation'
+      summary: Add the Animation.
+      tags:
+      - root
+  /api/gotti/{id}:
+    delete:
+      consumes:
+      - '*/*'
+      parameters:
+      - description: Animation ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Delete the Animation.
+      tags:
+      - root
+    get:
+      consumes:
+      - '*/*'
+      parameters:
+      - description: Animation ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Animation'
+      summary: Show the Animation.
+      tags:
+      - root
+    put:
+      consumes:
+      - '*/*'
+      description: get the status of server.
+      parameters:
+      - description: Animation ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: query params
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.Animation'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Animation'
+      summary: Update the Animation.
+      tags:
+      - root
+schemes:
+- http
+swagger: "2.0"
